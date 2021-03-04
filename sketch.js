@@ -1,4 +1,5 @@
 let inputs = {};
+let outputs = {};
 let sections = {};
 
 let vpos1;
@@ -12,22 +13,25 @@ let vpos3;
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
+
   vpos1 = windowHeight*0.25
   vpos2 = windowHeight*0.5
   vpos3 = windowHeight*0.75
 
   sections.one = createDiv().size(windowWidth*0.1, windowHeight);
   sections.one.position(0, 0);
-  // sections.one.style('background-color', 'red');
 
-  sections.two = createDiv().size(windowWidth*0.4, windowHeight);
+  sections.two = createDiv().size(windowWidth*0.35, windowHeight);
   sections.two.position(windowWidth*0.1, 0);
 
   sections.three = createDiv().size(windowWidth*0.1, windowHeight);
-  sections.three.position(windowWidth*0.5, 0);
+  sections.three.position(windowWidth*0.45, 0);
 
-  sections.four = createDiv().size(windowWidth*0.4, windowHeight);
-  sections.four.position(windowWidth*0.6, 0);
+  sections.four = createDiv().size(windowWidth*0.1, windowHeight);
+  sections.four.position(windowWidth*0.55, 0);
+
+  sections.five = createDiv().size(windowWidth*0.35, windowHeight);
+  sections.five.position(windowWidth*0.65, 0);
 
 
   inputs.inputP = createInput().size(sections.two.size().width - 10);
@@ -55,6 +59,18 @@ function setup() {
   inputs.submitEncrypt.parent(sections.three);
   inputs.submitDecrypt = createButton('decrypt').size(sections.three.size().width);
   inputs.submitDecrypt.parent(sections.three);
+
+  outputs.outputN = createInput().size(sections.five.size().width - 10);
+  outputs.outputN.parent(sections.five);
+  outputs.outputE = createInput().size(sections.five.size().width - 10);
+  outputs.outputE.parent(sections.five);
+  outputs.outputD = createInput().size(sections.five.size().width - 10);
+  outputs.outputD.parent(sections.five);
+
+  outputs.outputEncrypted = createInput().size(sections.five.size().width - 10);
+  outputs.outputEncrypted.parent(sections.five);
+  outputs.outputDecrypted = createInput().size(sections.five.size().width - 10);
+  outputs.outputDecrypted.parent(sections.five);
 
 
 
@@ -98,9 +114,34 @@ function setup() {
 
   inputs.submitEncrypt.center('horizontal');
   inputs.submitEncrypt.position(0, vpos2);
+  inputs.submitEncrypt.mousePressed(encrypt);
 
   inputs.submitDecrypt.center('horizontal');
   inputs.submitDecrypt.position(0, vpos3);
+  inputs.submitDecrypt.mousePressed(decrypt);
+
+
+  text('n = ', windowWidth*0.6, vpos1 - 25);
+  text('e = ', windowWidth*0.6, vpos1);
+  text('d = ', windowWidth*0.6, vpos1 + 25);
+
+  text('=', windowWidth*0.6, vpos2);
+
+  text('=', windowWidth*0.6, vpos3);
+
+
+  outputs.outputN.center('horizontal');
+  outputs.outputN.position((sections.five.size().width / 2) - (outputs.outputN.size().width / 2), vpos1 - 25);
+  outputs.outputE.center('horizontal');
+  outputs.outputE.position((sections.five.size().width / 2) - (outputs.outputE.size().width / 2), vpos1);
+  outputs.outputD.center('horizontal');
+  outputs.outputD.position((sections.five.size().width / 2) - (outputs.outputD.size().width / 2), vpos1 + 25);
+
+  outputs.outputEncrypted.center('horizontal');
+  outputs.outputEncrypted.position((sections.five.size().width / 2) - (outputs.outputEncrypted.size().width / 2), vpos2);
+
+  outputs.outputDecrypted.center('horizontal');
+  outputs.outputDecrypted.position((sections.five.size().width / 2) - (outputs.outputDecrypted.size().width / 2), vpos3);
 }
 
 
@@ -112,19 +153,23 @@ function calcKeys() {
 
   let [n, e, d] = createKeys(p, q);
 
-  
-  // let pN = createP('n = ' + n).parent(sections.four);
-  // pN.size(sections.four.size().width, 25);
-  // pN.center('horizontal');
-  // pN.position(0, vpos1 - 25);
-  // let pE = createP('e = ' + e).parent(sections.four);
-  // pE.size(sections.four.size().width, 25);
-  // pE.center('horizontal');
-  // pE.position(0, vpos1);
-  // let pD = createP('d = ' + d).parent(sections.four);
-  // pD.size(sections.four.size().width, 25);
-  // pD.center('horizontal');
-  // pD.position(0, vpos1 + 25);
+  outputs.outputN.value(n);
+  outputs.outputE.value(e);
+  outputs.outputD.value(d);
+}
+
+function encrypt() {
+  outputs.outputEncrypted.value(encodeText(inputs.inputNormalText.value(), inputs.inputE.value(), inputs.inputNE.value()));
+  inputs.inputNormalText.value('');
+  inputs.inputE.value('');
+  inputs.inputNE.value('');
+}
+
+function decrypt() {
+  outputs.outputDecrypted.value(decodeText(inputs.inputCipherText.value(), inputs.inputD.value(), inputs.inputND.value()));
+  inputs.inputCipherText.value('');
+  inputs.inputD.value('');
+  inputs.inputND.value('');
 }
 
 
@@ -233,6 +278,11 @@ function powmod(a, b, mod){
     return (t * t) % mod;
   }
 }
+
+
+
+
+
 
 const primes = [2,     3,     5,     7,    11,    13,    17,    19,    23,    29,    31,    37,    41,    43,
   47,    53,    59,    61,    67,    71,    73,    79,    83,    89,    97,   101,   103,   107,
